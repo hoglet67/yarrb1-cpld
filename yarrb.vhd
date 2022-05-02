@@ -12,12 +12,13 @@
 --
 -- Dependencies: 
 --
--- Revision: 72v1.5
+-- Revision: 72v1.6
 -- Additional Comments: 
 --		This version is for using 128kB ram and 128kB rom and
 --		is supporting three memory profiles.
 --    Register BFFE's power up default is 0x06
 --    Included Chris Moulang's Bxxx slowdown changes
+--    Support FLASH reprogramming with FPGAUtils FLASH command
 ----------------------------------------------------------------------------------
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
@@ -67,6 +68,7 @@ architecture Behavioral of yarrb is
 	signal regBFFF:				STD_LOGIC_VECTOR(7 downto 0);
 	signal RD, WR, WP:			STD_LOGIC;
 	signal BS0, BS1, BS2:		STD_LOGIC;
+	signal BS3, BS4:				STD_LOGIC;
 	signal XMA0, XMA1, XMA2:	STD_LOGIC;
 	signal MP0, MP1:				STD_LOGIC;
 	signal ClkSel, TurboMode:	STD_LOGIC;
@@ -158,7 +160,7 @@ architecture Behavioral of yarrb is
 		end if;
 	end process;
 
-	process (A15, A14, A13, A12, A11, A10, A9, A8, BS0, BS1, BS2, XMA0, XMA1, XMA2, MP0, MP1, nBFFX)
+	process (A15, A14, A13, A12, A11, A10, A9, A8, BS0, BS1, BS2, BS3, BS4, XMA0, XMA1, XMA2, MP0, MP1, nBFFX)
 	begin
 
 		-- Memory profile 1: Atom RAM/ROM Board
@@ -168,7 +170,7 @@ architecture Behavioral of yarrb is
 			-- chip select rom 
 			if (A15 = '1' and A14 = '1') 
 				or (A15 = '1' and A14 = '0' and A13 = '1' and A12 = '0' and XMA0 = '0')
-				or (A15 = '1' and A14 = '0' and A13 = '1' and A12 = '0' and XMA0 = '1' and (BS2 = '1' or BS1 = '1' or BS0 = '1'))
+				or (A15 = '1' and A14 = '0' and A13 = '1' and A12 = '0' and XMA0 = '1' and (BS4 = '1' or BS3 = '1' or BS2 = '1' or BS1 = '1' or BS0 = '1'))
 			then 
 				CSROM <= '0';
 			else
@@ -176,7 +178,7 @@ architecture Behavioral of yarrb is
 			end if;	
 
 			-- chip select ram (inverse logic!)
-			if (A15 = '1' and A14 = '0' and A13 = '1' and A12 = '0' and XMA0 = '1' and BS2 = '0' and BS1 = '0' and BS0 = '0')
+			if (A15 = '1' and A14 = '0' and A13 = '1' and A12 = '0' and XMA0 = '1' and BS4 = '0' and BS3 = '0' and BS2 = '0' and BS1 = '0' and BS0 = '0')
 				or (A15 = '0' and XMA1 = '1')
 				or (A15 = '0' and XMA1 = '0' and not (A14 = '0' and A13 = '0' and A12 = '0' and A11 = '1' and A10 = '0' and A9 = '1' and A8 = '0'))
 			then
@@ -187,15 +189,21 @@ architecture Behavioral of yarrb is
 
 			-- RA16
 			if (A15 = '1' and A14 = '1')
-				or (A15 = '1' and A14 = '0' and A13 = '1' and A12 = '0' and XMA0 = '1' and BS2 = '0' and BS1 = '0' and BS0 = '0')
-			then 
+				or (A15 = '1' and A14 = '0' and A13 = '1' and A12 = '0' and XMA0 = '1' and BS4 = '0' and BS3 = '0' and BS2 = '0' and BS1 = '0' and BS0 = '0')
+				or (A15 = '1' and A14 = '0' and A13 = '1' and A12 = '0' and BS4 = '1')
+			then
 				RA16 <= '1';
 			else
 				RA16 <= '0';
 			end if;
 
-			-- RA15 (always zero in this profile)
-			RA15 <= '0';
+			-- RA15
+			if (A15 = '1' and A14 = '0' and A13 = '1' and A12 = '0' and BS3 = '1')
+			then
+				RA15 <= '1';
+			else
+				RA15 <= '0';
+			end if;
 
 			-- RA14
 			if (A15 = '1' and A14 = '1' and XMA2 = '0')
@@ -391,6 +399,8 @@ architecture Behavioral of yarrb is
 	BS0 <= regBFFF(0);
 	BS1 <= regBFFF(1);
 	BS2 <= regBFFF(2);
+	BS3 <= regBFFF(3);
+	BS4 <= regBFFF(4);
 	
 	XMA0 <= regBFFE(0);
 	XMA1 <= regBFFE(1);
