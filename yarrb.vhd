@@ -12,10 +12,11 @@
 --
 -- Dependencies: 
 --
--- Revision: 72v1.3
+-- Revision: 72v1.4
 -- Additional Comments: 
 --		This version is for using 128kB ram and 128kB rom and
 --		is supporting three memory profiles.
+--    Register BFFE's power up default is 0x06
 ----------------------------------------------------------------------------------
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
@@ -61,7 +62,8 @@ end yarrb;
 
 architecture Behavioral of yarrb is
 	signal ClkDiv: 				STD_LOGIC_VECTOR(1 downto 0);
-	signal regBFFE, regBFFF :	STD_LOGIC_VECTOR(7 downto 0);
+	signal regBFFE:				STD_LOGIC_VECTOR(7 downto 0) := x"06";
+	signal regBFFF:				STD_LOGIC_VECTOR(7 downto 0);
 	signal RD, WR, WP:			STD_LOGIC;
 	signal BS0, BS1, BS2:		STD_LOGIC;
 	signal XMA0, XMA1, XMA2:	STD_LOGIC;
