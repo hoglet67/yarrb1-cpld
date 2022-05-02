@@ -299,9 +299,9 @@ architecture Behavioral of yarrb is
 				csrom <= '1';
 
 				-- csram (inverse logic!) 
-				if (A15 = '1' and A14 = '0' and A13 = '1' and A12 = '1') or
-                   (A15 = '1' and A14 = '0' and A13 = '0')
+				if (A15 = '1' and A14 = '0' and A13 = '1' and A12 = '1')
 					or (A15 = '0' and XMA2 = '0' and A14 = '0' and A13 = '0' and A12 = '0' and A11 = '1' and A10 = '0' and A9 = '1' and A8 = '0')
+					or (A15 = '1' and A14 = '0' and A13 = '0')
 				then
 					csram <= '0';
 				else	
@@ -310,7 +310,7 @@ architecture Behavioral of yarrb is
 
 				-- RA16
 				if (A15 = '0' and A14 = '1' and XMA1 = '1')
-					or (A15 = '1' and A15 = '0' and A13 = '1' and A12 = '0' and BS2 = '1')
+					or (A15 = '1' and A14 = '0' and A13 = '1' and A12 = '0' and BS2 = '1')
 					or (A15 = '1' and A14 = '1')
 				then
 					RA16 <= '1';
@@ -320,7 +320,7 @@ architecture Behavioral of yarrb is
 
 				-- RA15
 				if (A15 = '0' and A14 = '1' and XMA0 = '1')
-					or (A15 = '1' and A15 = '0' and A13 = '1' and A12 = '0' and BS2 = '0')
+					or (A15 = '1' and A14 = '0' and A13 = '1' and A12 = '0' and BS2 = '0')
 					or (A15 = '1' and A14 = '1')
 				then
 					RA15 <= '1';
@@ -330,7 +330,7 @@ architecture Behavioral of yarrb is
 
 				-- RA14
 				if (A15 = '0' and A14 = '1' and XMA0 = '0')
-					or (A15 = '1' and A15 = '0' and A13 = '1' and A12 = '0' and BS2 = '0')
+					or (A15 = '1' and A14 = '0' and A13 = '1' and A12 = '0' and BS2 = '0')
 					or (A15 = '1' and A14 = '1')
 				then
 					RA14 <= '1';
@@ -340,7 +340,7 @@ architecture Behavioral of yarrb is
 				
 				-- RA13
 				if (A15 = '0' and A13 = '1')
-					or (A15 = '1' and A15 = '0' and A13 = '1' and A12 = '0' and BS1 = '1')
+					or (A15 = '1' and A14 = '0' and A13 = '1' and A12 = '0' and BS1 = '1')
 					or (A15 = '1' and A14 = '1' and A13 = '1')
 				then
 					RA13 <= '1';
@@ -350,7 +350,7 @@ architecture Behavioral of yarrb is
 
 				-- RA12
 				if (A15 = '0' and A12 = '1')
-					or (A15 = '1' and A15 = '0' and A13 = '1' and A12 = '0' and BS0 = '1')
+					or (A15 = '1' and A14 = '0' and A13 = '1' and A12 = '0' and BS0 = '1')
 					or (A15 = '1' and A14 = '1' and A12 = '1') 
 				then
 					RA12 <= '1';
