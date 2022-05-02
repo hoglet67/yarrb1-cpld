@@ -1,0 +1,39 @@
+NET "A12" BUFG=DATA_GATE;
+
+NET "DD(0)"	LOC = "P12";
+NET "DD(1)"	LOC = "P13";
+NET "DD(2)"	LOC = "P14";
+NET "DD(3)"	LOC = "P18";
+NET "DD(4)"	LOC = "P19";
+NET "DD(5)"	LOC = "P20";
+NET "DD(6)"	LOC = "P22";
+NET "DD(7)"	LOC = "P24";
+
+NET "A15"	LOC = "P11";
+NET "A14"	LOC = "P9";
+NET "A13"	LOC = "P8";
+NET "A12"	LOC = "P7";
+NET "A11"	LOC = "P27";
+NET "A10"	LOC = "P28";
+NET "A9"		LOC = "P29";
+NET "A8"		LOC = "P33";
+NET "RS"		LOC = "P1";
+
+NET "ClkIn"	LOC = "P36";
+NET "Phi2"	LOC = "P37";
+NET "nBUFEN"	LOC = "P26";
+NET "NRDS"	LOC = "P39";
+NET "NWDS"	LOC = "P40";
+NET "nBFFX"	LOC = "P25";
+NET "Reset"	LOC = "P34";
+NET "RW"		LOC = "P35";
+
+NET "ClkOut"	LOC = "P38";
+NET "CSRAM"	LOC = "P43";
+NET "CSROM"	LOC = "P42";
+
+NET "RA16"	LOC = "P6";
+NET "RA15"	LOC = "P5";
+NET "RA14"	LOC = "P4";
+NET "RA13"	LOC = "P3";
+NET "RA12"	LOC = "P2";
