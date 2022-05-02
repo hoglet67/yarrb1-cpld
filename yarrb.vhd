@@ -12,7 +12,7 @@
 --
 -- Dependencies: 
 --
--- Revision: 1.0
+-- Revision: 72v1.3
 -- Additional Comments: 
 --		This version is for using 128kB ram and 128kB rom and
 --		is supporting three memory profiles.
@@ -362,7 +362,9 @@ architecture Behavioral of yarrb is
 		end if;
 
 		-- Bus Buffer control
-		if (A15 = '1' and A14 = '0' and A13 = '1' and A12 = '1' and A11 = '1' and A10 = '1' and A9 = '0' and A8 = '0' and nBFFX = '1') then
+		if (A15 = '1' and A14 = '0' and A13 = '1' and A12 = '1' and A11 = '1' and A10 = '1' and nBFFX = '1') 
+			or (A15 = '0' and A14 = '0' and A13 = '0' and A12 = '0' and A11 = '1' and A10 = '0' and A9 = '1' and A8 = '0' and XMA1 = '0')
+		then
 			nBUFEN <= '0';
 		else 
 			nBUFEN <= '1';
