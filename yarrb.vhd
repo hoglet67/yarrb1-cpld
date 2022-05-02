@@ -12,11 +12,12 @@
 --
 -- Dependencies: 
 --
--- Revision: 72v1.4
+-- Revision: 72v1.5
 -- Additional Comments: 
 --		This version is for using 128kB ram and 128kB rom and
 --		is supporting three memory profiles.
 --    Register BFFE's power up default is 0x06
+--    Included Chris Moulang's Bxxx slowdown changes
 ----------------------------------------------------------------------------------
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
@@ -69,6 +70,7 @@ architecture Behavioral of yarrb is
 	signal XMA0, XMA1, XMA2:	STD_LOGIC;
 	signal MP0, MP1:				STD_LOGIC;
 	signal ClkSel, TurboMode:	STD_LOGIC;
+	signal nBXXX:					STD_LOGIC;
 	
 	begin	
 		process(Phi2, A15, A14, MP0, MP1, Reset, nBFFX)
@@ -123,27 +125,36 @@ architecture Behavioral of yarrb is
 		end if;
 	end process;
 
-	process(ClkIn, TurboMode, ClkSel, ClkDiv)
+	process (A15, A14, A13, A12)
+	begin
+		nBXXX <= not (A15 and not A14 and A13 and A12);
+	end process;
+
+	process(ClkIn, ClkSel, TurboMode, nBXXX, ClkDiv)
 	begin
 		if falling_edge(ClkIn) then
-			ClkDiv <= STD_LOGIC_VECTOR(unsigned(ClkDiv) + 1);
-			-- read clock select bits from #BFFE when counter is zero,
-			-- that way we can garantee that the PHI0 pin is low
-			if ClkDiv = b"00" then
-				TurboMode <= regBFFE(5);
+			if unsigned(ClkDiv) = 0 then
+				-- read clock select bits from #BFFE when counter is zero,
+				-- that way we can garantee that the PHI0 pin is low
 				ClkSel <= regBFFE(6);
+				TurboMode <= regBFFE(5);
+			end if;
+			if nBXXX = '0' then
+				-- 1MHz for IO
+				ClkDiv <= STD_LOGIC_VECTOR(unsigned(ClkDiv) + 1);
+			elsif ClkSel = '1' then
+				-- 2MHz
+				ClkDiv <= STD_LOGIC_VECTOR(unsigned(ClkDiv) + 2);
+			elsif TurboMode = '1' then
+				ClkDiv <= (others => '0');
+			else
+				ClkDiv <= STD_LOGIC_VECTOR(unsigned(ClkDiv) + 1);
 			end if;
 		end if;
-	
-		-- Clock divider to 1, 2 and 4 MHz clock signals
-		if (TurboMode = '0') then
-			if (ClkSel = '0') then
-				ClkOut <= ClkDiv(1);
-			else
-				ClkOut <= ClkDiv(0);
-			end if;
-		else
+		if TurboMode = '1' and nBXXX = '1' then
 			ClkOut <= ClkIn;
+		else
+			ClkOut <= ClkDiv(1);
 		end if;
 	end process;
 
