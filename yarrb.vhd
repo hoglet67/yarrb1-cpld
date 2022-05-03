@@ -12,13 +12,14 @@
 --
 -- Dependencies: 
 --
--- Revision: 72v1.6
+-- Revision: 72v1.7
 -- Additional Comments: 
 --		This version is for using 128kB ram and 128kB rom and
 --		is supporting three memory profiles.
 --    Register BFFE's power up default is 0x06
 --    Included Chris Moulang's Bxxx slowdown changes
 --    Support FLASH reprogramming with FPGAUtils FLASH command
+--    Make Bxxx slowdown more selective
 ----------------------------------------------------------------------------------
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
@@ -30,6 +31,13 @@ use IEEE.NUMERIC_STD.ALL;
 --use UNISIM.VComponents.all;
 
 entity yarrb is
+	 Generic (
+		-- Set to true to force the block to be accessed at 1MHz
+		B0SlowDown : boolean := true;  -- #B000-#B3FF (8255)
+		B4SlowDown : boolean := false; -- #B400-#B7FF (AtoMMC)
+		B8SlowDown : boolean := true;  -- #B800-#BBFF (6522)
+		BCSlowDown : boolean := false  -- #BC00-#BFFF (Other)
+		);
     Port ( 
 		DD:		inout	STD_LOGIC_VECTOR (7 downto 0);
 
@@ -127,9 +135,22 @@ architecture Behavioral of yarrb is
 		end if;
 	end process;
 
-	process (A15, A14, A13, A12)
+	process (A15, A14, A13, A12, A11, A10)
 	begin
-		nBXXX <= not (A15 and not A14 and A13 and A12);
+		if (
+			-- Bxxx
+			(A15 = '1' and A14 = '0' and A13 = '1' and A12 = '1') and
+			-- The particular 1K block is marked for slowdown
+			((A11 = '0' and A10 = '0' and B0SlowDown) or
+			 (A11 = '0' and A10 = '1' and B4SlowDown) or
+			 (A11 = '1' and A10 = '0' and B8SlowDown) or
+			 (A11 = '1' and A10 = '1' and BCSlowDown))
+			 )
+		 then
+			 nBXXX <= '0';
+		 else
+			 nBXXX <= '1';
+		 end if;
 	end process;
 
 	process(ClkIn, ClkSel, TurboMode, nBXXX, ClkDiv)
